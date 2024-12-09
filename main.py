@@ -32,7 +32,7 @@ def rag_pipeline(selected_files, embedding_model, vector_store, llm_model):
     vectorstore = VectorStore.vectorization(vector_store, text_chunks, embeddings)
 
     llm = LLM.get_llm(llm_model)
-    with open('/Users/aatif/ER_LLM/prompt/ER_prompt.txt', 'r') as file:
+    with open('/Users/aatif/household_discovery/prompt/ER_prompt.txt', 'r') as file:
         prompt_template = file.read()
     prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
 
