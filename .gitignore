@@ -1,2 +1,4 @@
 .env
 /output/
+rag/__pycache__
+utils/__pycache__
