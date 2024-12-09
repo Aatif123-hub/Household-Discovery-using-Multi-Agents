@@ -1,7 +1,8 @@
 from textwrap import dedent
 from crewai import Agent
 from rag.llm import LLM
-class IndirectMatchAgent:
+
+class HouseholdMatchAgent:
 
     def __init__(self):
         self.llm = LLM
