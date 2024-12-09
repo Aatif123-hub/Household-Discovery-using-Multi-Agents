@@ -1,0 +1,13 @@
+langchain
+pandas
+langchain-community
+streamlit
+langchain-openai
+tf-keras
+google-generativeai
+langchain-google-genai
+langchain-huggingface
+langchain-mistralai
+python-dotenv
+qdrant-client
+crewai
