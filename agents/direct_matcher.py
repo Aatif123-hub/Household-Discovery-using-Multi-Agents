@@ -17,10 +17,7 @@ class DirectMatchAgent:
                                you must provide the direct matches in a datset using multiple attributes
                                Identify records where the full names are the same or have minor spelling variations.
                                Consider abbreviations, nicknames, and common misspellings.
-                               Account for case sensitivity and punctuation differences.
-                               Example:
-
-                               Records A928147 and A972885 both have the name "FRANCINE J KEGLER" (with minor variations) and are thus a direct match."""),
+                               Account for case sensitivity and punctuation differences."""),
             
             allow_delegation=False,
             llm = self.llm,
