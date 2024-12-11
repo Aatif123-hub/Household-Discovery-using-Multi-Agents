@@ -15,7 +15,6 @@ class HouseholdMovesAgent:
             backstory = dedent("""\
                                As a Household Moves Specialist in the field of entity resolution, 
                                you must provide the Household Moves in a datset using multiple attributes
-                               Identify records where the full names are the same or have minor spelling variations.
                                Consider abbreviations, nicknames, and common misspellings.
                                Account for case sensitivity and punctuation differences."""),
             
