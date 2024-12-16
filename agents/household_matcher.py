@@ -3,11 +3,8 @@ from crewai import Agent
 from rag.llm import LLM
 
 class HouseholdMatchAgent:
-
-    def __init__(self):
-        self.llm = LLM
-
-    def household_match(self):
+    try:
+     def household_match():
           return Agent(
             role = "Household Match Specialist",
             goal = dedent("""\
@@ -20,6 +17,8 @@ class HouseholdMatchAgent:
                                Account for case sensitivity and punctuation differences."""),
             
             allow_delegation=False,
-            llm = self.llm,
+            llm = LLM,
             verbose=True
         )
+    except Exception as e:
+       raise Exception(f"Cannot execute Household Matcher Agent. Error:{e}")
