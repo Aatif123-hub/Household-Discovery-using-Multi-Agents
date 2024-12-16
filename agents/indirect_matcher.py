@@ -3,11 +3,8 @@ from crewai import Agent
 from rag.llm import LLM
 
 class IndirectMatchAgent:
-
-    def __init__(self):
-        self.llm = LLM
-
-    def indirect_match(self):
+    try:
+     def indirect_match():
           return Agent(
             role = "Indirect Match Specialist",
             goal = dedent("""\
@@ -20,6 +17,8 @@ class IndirectMatchAgent:
                                Account for case sensitivity and punctuation differences."""),
             
             allow_delegation=False,
-            llm = self.llm,
+            llm = LLM,
             verbose=True
         )
+    except Exception as e:
+       raise Exception(f"Cannot execute Indirect Matcher Agent. Error:{e}")
