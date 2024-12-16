@@ -1,8 +1,10 @@
 from crewai import Task
 from textwrap import dedent
+from agents.indirect_matcher import IndirectMatchAgent
 
 class IndirectMatcherTasks:
-    def indirect_matcher_task(self,agent):
+    try:
+     def indirect_matcher_task():
         return Task(description=dedent(f"""\
                     Perform indirect matching of records connected through an intermediary.
 
@@ -19,5 +21,7 @@ class IndirectMatcherTasks:
                     Records 1, 2, and 3 are indirectly matched.
 
                     """),
-                    agent=agent
+                    agent=IndirectMatchAgent
         )
+    except Exception as e:
+       raise Exception(f"Cannot execute Indirect Matcher Task. Error:{e}")

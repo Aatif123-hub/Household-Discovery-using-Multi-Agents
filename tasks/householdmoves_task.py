@@ -1,8 +1,10 @@
 from crewai import Task
 from textwrap import dedent
+from agents.householdmoves_matcher import HouseholdMovesAgent
 
 class HouseholdMovesTasks:
-    def household_moves_task(self,agent):
+    try:
+     def household_moves_task():
         return Task(description=dedent(f"""\
                     Find instances where a household has moved to a new address.
                     
@@ -23,5 +25,7 @@ class HouseholdMovesTasks:
                     All four records together represent a household move.             
 
                     """),
-                    agent=agent
+                    agent=HouseholdMovesAgent
         )
+    except Exception as e:
+       raise Exception(f"Cannot execute Household Moves Task. Eroor:{e}")

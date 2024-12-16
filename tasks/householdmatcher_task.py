@@ -1,8 +1,10 @@
 from crewai import Task
 from textwrap import dedent
+from agents.household_matcher import HouseholdMatchAgent
 
 class HouseholdMatcherTasks:
-    def household_matcher_task(self,agent):
+    try:
+     def household_matcher_task():
         return Task(description=dedent(f"""\
                     Identify records with different names but the same address.
                     Account for variations in address formatting (e.g., abbreviations, misspellings).
@@ -14,5 +16,7 @@ class HouseholdMatcherTasks:
                     These records form a household.
 
                     """),
-                    agent=agent
+                    agent=HouseholdMatchAgent
         )
+    except Exception as e:
+       raise Exception(f"Cannot execute Household Matcher Task. Error:{e}")
