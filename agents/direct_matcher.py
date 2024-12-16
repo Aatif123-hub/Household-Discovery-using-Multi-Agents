@@ -4,11 +4,8 @@ from crewai import Agent
 from rag.llm import LLM
 
 class DirectMatchAgent:
-
-    def __init__(self):
-        self.llm = LLM
-
-    def direct_match(self):
+    try:
+     def direct_match():
           return Agent(
             role = "Direct Match Specialist",
             goal = dedent("""\
@@ -21,8 +18,9 @@ class DirectMatchAgent:
                                Account for case sensitivity and punctuation differences."""),
             
             allow_delegation=False,
-            llm = self.llm,
+            llm = LLM,
             verbose=True
         )
-
+    except Exception as e:
+       raise Exception(f"Cannot execute Direct Matcher Agent. Error:{e}")
     
