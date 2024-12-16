@@ -3,11 +3,8 @@ from crewai import Agent
 from rag.llm import LLM
 
 class HouseholdMovesAgent:
-
-    def __init__(self):
-        self.llm = LLM
-
-    def household_moves(self):
+    try:
+     def household_moves():
           return Agent(
             role = "Household Moves Specialist",
             goal = dedent("""\
@@ -19,6 +16,8 @@ class HouseholdMovesAgent:
                                Account for case sensitivity and punctuation differences."""),
             
             allow_delegation=False,
-            llm = self.llm,
+            llm = LLM,
             verbose=True
         )
+    except Exception as e:
+       raise Exception(f"Cannot execute Household Moves Agent. Error:{e}")
