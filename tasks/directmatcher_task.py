@@ -1,8 +1,10 @@
 from crewai import Task
 from textwrap import dedent
+from agents.direct_matcher import DirectMatchAgent
 
 class DirectMatcherTasks:
-    def direct_matcher_task(self,agent):
+    try:
+     def direct_matcher_task():
         return Task(description=dedent(f"""\
                     Link records that directly match by name.
 
@@ -14,5 +16,7 @@ class DirectMatcherTasks:
                     Records A928147 and A972885 both have the name "FRANCINE J KEGLER" (with minor variations) and are thus a direct match.
 
                     """),
-                    agent=agent
+                    agent=DirectMatchAgent
         )
+    except Exception as e:
+       raise Exception(f"Cannnot execute Direct Matcher Task. Error:{e}") 
