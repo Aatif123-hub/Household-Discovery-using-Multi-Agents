@@ -4,23 +4,19 @@ import streamlit as st
 from utils.parser import Parsers
 from utils.chunking import Chunking
 from rag.embeddings import Embeddings
+from crewai import Crew
 from rag.vectorstore import VectorStore
-from langchain.prompts import PromptTemplate
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
-from langchain.retrievers.multi_query import MultiQueryRetriever
 from rag.llm import LLM
+from multiagents.agents import ER_AGENTS
+from multiagents.tasks import ER_TASKS
 
 def rag_pipeline(selected_files, embedding_model, vector_store, llm_model):
-
     combined_text = ""
     for selected_file in selected_files:
         if selected_file.endswith('.csv'):
             combined_text += Parsers.csv_parser([selected_file]).to_string()
-
         elif selected_file.endswith('.xlsx'):
-            combined_text += Parsers.xlsx_parser([selected_file]).to_string() 
-
+            combined_text += Parsers.xlsx_parser([selected_file]).to_string()
         else:
             raise ValueError("Unsupported file type. Please select a CSV or XLSX file.")
 
@@ -32,27 +28,27 @@ def rag_pipeline(selected_files, embedding_model, vector_store, llm_model):
     vectorstore = VectorStore.vectorization(vector_store, text_chunks, embeddings)
 
     llm = LLM.get_llm(llm_model)
-    with open('/Users/aatif/household_discovery/prompt/ER_prompt.txt', 'r') as file:
-        prompt_template = file.read()
-    prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
 
-    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+    # Initialize ER_AGENTS with the selected LLM model
+    er_agents = ER_AGENTS(llm_model)
 
-    multi_query_retriever = MultiQueryRetriever.from_llm(
-        llm=llm,
-        retriever=vectorstore.as_retriever(),
+    direct_match = er_agents.direct_match()
+    indirect_match = er_agents.indirect_match()
+    household_match = er_agents.household_match()
+    household_moves = er_agents.household_moves()
+
+    direct_matcher = ER_TASKS.direct_matcher_task(direct_match)
+    indirect_matcher = ER_TASKS.indirect_matcher_task(indirect_match)
+    household_matcher = ER_TASKS.household_matcher_task(household_match)
+    household_movement = ER_TASKS.household_moves_task(household_moves)
+
+    crew = Crew(
+        agents=[direct_match, indirect_match, household_match, household_moves],
+        tasks=[direct_matcher, indirect_matcher, household_matcher, household_movement],
+        verbose=True
     )
-
-    conversation_chain = ConversationalRetrievalChain.from_llm(
-        llm=llm,
-        retriever=multi_query_retriever,
-        memory=memory,
-        verbose=True,
-        combine_docs_chain_kwargs={"prompt": prompt},
-    )
-
-    response = conversation_chain({"question": "Provide a summary based on the prompt template."})
-    return response['answer']
+    result = crew.kickoff()
+    return result
 
 if __name__ == "__main__":
     st.title("Entity Resolution with LLM")
