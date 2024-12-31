@@ -1,6 +1,7 @@
 import os
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
+from crewai import LLM
 from langchain_mistralai import ChatMistralAI
 from langchain_google_genai import ChatGoogleGenerativeAI
 load_dotenv()
@@ -21,7 +22,7 @@ class LLM:
         
         elif select_model == 'mistral':
            try:
-              llm = ChatMistralAI(model = "mistral-large-latest",
+              llm = LLM(model = "mistral/mistral-large-latest",
                                   max_tokens=4096,
                                   temperature=0.2)
            except Exception as e:
@@ -38,7 +39,7 @@ class LLM:
            
         elif select_model == 'gemini':
            try:
-              llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash",
+              llm = LLM(model="gemini/gemini-1.5-flash",
                           api_key = os.getenv("GOOGLE_API_KEY"),
                           max_tokens=4096,
                           temperature=0.2)
