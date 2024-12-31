@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from crewai import LLM
 from langchain_mistralai import ChatMistralAI
 from langchain_google_genai import ChatGoogleGenerativeAI
+from litellm import completion
 load_dotenv()
 
 class LLM:
@@ -22,9 +23,10 @@ class LLM:
         
         elif select_model == 'mistral':
            try:
-              llm = LLM(model = "mistral/mistral-large-latest",
-                                  max_tokens=4096,
-                                  temperature=0.2)
+              llm = ChatMistralAI(model = "mistral/mistral-large-latest",
+                        api_key = os.getenv("MISTRAL_API_KEY"),
+                        max_tokens=4096,
+                        temperature=0.2)
            except Exception as e:
               raise Exception(f"Cannot load mistral. Error:{e}")
            
@@ -39,7 +41,7 @@ class LLM:
            
         elif select_model == 'gemini':
            try:
-              llm = LLM(model="gemini/gemini-1.5-flash",
+              llm = ChatGoogleGenerativeAI(model="gemini/gemini-1.5-flash",
                           api_key = os.getenv("GOOGLE_API_KEY"),
                           max_tokens=4096,
                           temperature=0.2)
