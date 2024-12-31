@@ -1,5 +1,6 @@
 from crewai import Task
 from textwrap import dedent
+from agents import direct_matcher,indirect_matcher,household_matcher,householdmoves_matcher
 
 class ER_TASKS:
     def direct_matcher_task(agent):
@@ -12,7 +13,16 @@ class ER_TASKS:
                     Records A928147 and A972885 both have the name "FRANCINE J KEGLER" (with minor variations) and are thus a direct match.
 
                     """),
-                    agent=agent
+                    agent=agent,
+                    expected_output=dedent("""
+                       Present the results in a clear and organized table format.
+                       Specify Direct Match, Indirect Match etc... seperately
+                       Include all relevant details to make each entity easy to locate and verify.
+                       Explanation:
+                       For each identified link, briefly explain how the entities are connected.
+                       Examples: "Same name with minor spelling differences and identical address," "Different names but identical address indicating a household."
+            
+                    """)
         )
     def indirect_matcher_task(agent):
         return Task(description=dedent(f"""\
@@ -29,7 +39,15 @@ class ER_TASKS:
                     Records 1, 2, and 3 are indirectly matched.
 
                     """),
-                    agent=agent
+                    agent=agent,
+                    expected_output=dedent("""
+                      Present the results in a clear and organized table format.
+                       Specify Direct Match, Indirect Match etc... seperately
+                       Include all relevant details to make each entity easy to locate and verify.
+                       Explanation:
+                       For each identified link, briefly explain how the entities are connected.
+                       Examples: "Same name with minor spelling differences and identical address," "Different names but identical address indicating a household."
+                    """)
         )
     def household_matcher_task(agent):
         return Task(description=dedent(f"""\
@@ -43,7 +61,15 @@ class ER_TASKS:
                     These records form a household.
 
                     """),
-                    agent=agent
+                    agent=agent,
+                    expected_output=dedent("""
+                       Present the results in a clear and organized table format.
+                       Specify Direct Match, Indirect Match etc... seperately
+                       Include all relevant details to make each entity easy to locate and verify.
+                       Explanation:
+                       For each identified link, briefly explain how the entities are connected.
+                       Examples: "Same name with minor spelling differences and identical address," "Different names but identical address indicating a household."
+                    """)
         )
     def household_moves_task(agent):
         return Task(description=dedent(f"""\
@@ -64,5 +90,14 @@ class ER_TASKS:
                     All four records together represent a household move.             
 
                     """),
-                    agent=agent
+                    agent=agent,
+                    expected_output=dedent("""
+                       Present the results in a clear and organized table format.
+                       Specify Direct Match, Indirect Match etc... seperately
+                       Include all relevant details to make each entity easy to locate and verify.
+                       Explanation:
+                       For each identified link, briefly explain how the entities are connected.
+                       Examples: "Same name with minor spelling differences and identical address," "Different names but identical address indicating a household."
+            
+                    """)
         )
