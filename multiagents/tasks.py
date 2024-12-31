@@ -1,6 +1,5 @@
 from crewai import Task
 from textwrap import dedent
-from agents import direct_matcher,indirect_matcher,household_matcher,householdmoves_matcher
 
 class ER_TASKS:
     def direct_matcher_task(agent):
@@ -20,7 +19,15 @@ class ER_TASKS:
                        Include all relevant details to make each entity easy to locate and verify.
                        Explanation:
                        For each identified link, briefly explain how the entities are connected.
-                       Examples: "Same name with minor spelling differences and identical address," "Different names but identical address indicating a household."
+                       Examples: "Same name with minor spelling differences and identical address," "Different names but identical address indicating a household.
+                     
+                       include attributes 
+                       - record id
+                        - name
+                       - address
+                       -state
+                       -city
+                       -explanation
             
                     """)
         )
@@ -46,7 +53,15 @@ class ER_TASKS:
                        Include all relevant details to make each entity easy to locate and verify.
                        Explanation:
                        For each identified link, briefly explain how the entities are connected.
-                       Examples: "Same name with minor spelling differences and identical address," "Different names but identical address indicating a household."
+                       Examples: "Same name with minor spelling differences and identical address," "Different names but identical address indicating a household.
+                                           
+                        include attributes 
+                       - record id
+                        - name
+                       - address
+                       -state
+                       -city
+                       -explanation
                     """)
         )
     def household_matcher_task(agent):
@@ -68,7 +83,15 @@ class ER_TASKS:
                        Include all relevant details to make each entity easy to locate and verify.
                        Explanation:
                        For each identified link, briefly explain how the entities are connected.
-                       Examples: "Same name with minor spelling differences and identical address," "Different names but identical address indicating a household."
+                       Examples: "Same name with minor spelling differences and identical address," "Different names but identical address indicating a household.
+                        
+                       include attributes 
+                       - record id
+                        - name
+                       - address
+                       -state
+                       -city
+                       -explanation
                     """)
         )
     def household_moves_task(agent):
@@ -97,7 +120,15 @@ class ER_TASKS:
                        Include all relevant details to make each entity easy to locate and verify.
                        Explanation:
                        For each identified link, briefly explain how the entities are connected.
-                       Examples: "Same name with minor spelling differences and identical address," "Different names but identical address indicating a household."
+                       Examples: "Same name with minor spelling differences and identical address," "Different names but identical address indicating a household.
+                                           
+                      include attributes 
+                       - record id
+                        - name
+                       - address
+                       -state
+                       -city
+                       -explanation
             
                     """)
         )
