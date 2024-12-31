@@ -6,15 +6,13 @@ from rag.llm import LLM
 class ER_AGENTS:
     def direct_match():
         return Agent(
-            role = "Direct Record Matcher",
+            role = "Direct Record Linkage Specialist",
             goal = dedent("""\
-                        Conduct research on the dataset and provide the direct match result in a tabular format.""" ),
+                        Link records that directly match by name and provide results in a tabular format.""" ),
             backstory = dedent("""\
-                               As a Direct Matcher in the field of record linkage, 
-                               you must provide the direct matches in a datset using multiple attributes
-                               Identify records where the full names are the same or have minor spelling variations.
-                               Consider abbreviations, nicknames, and common misspellings.
-                               Account for case sensitivity and punctuation differences."""),
+                               As a Direct Record Linker, you must identify and link records with identical 
+                               or nearly identical full names, accounting for minor spelling variations, 
+                               abbreviations, nicknames, case sensitivity, and punctuation differences."""),
             
             allow_delegation=False,
             llm = LLM,
@@ -22,15 +20,13 @@ class ER_AGENTS:
         )
     def indirect_match():
           return Agent(
-            role = "Indirect Record Matcher",
+            role = "Indirect Record linking Specialist",
             goal = dedent("""\
-                        Conduct research on the dataset and provide the indirect match result in a tabular format.""" ),
+                    Link records that are connected through an intermediary and provide results in a tabular format""" ),
             backstory = dedent("""\
-                               As an Indirect Matcher in the field of entity resolution, 
-                               you must provide the indirect matches in a datset using multiple attributes
-                               Identify records where the full names are the same or have minor spelling variations.
-                               Consider abbreviations, nicknames, and common misspellings.
-                               Account for case sensitivity and punctuation differences."""),
+                               As an Indirect Record Linker, you must identify records that are indirectly 
+                               connected through an intermediary attribute, such as matching one record by 
+                               name and another by address,thereby linking all associated records."""),
             
             allow_delegation=False,
             llm = LLM,
@@ -38,15 +34,13 @@ class ER_AGENTS:
         )
     def household_match():
         return Agent(
-            role = "Household Match Specialist",
+            role = "Household Identification Specialist",
             goal = dedent("""\
-                        Conduct research on the dataset and provide the Household match result in a tabular format.""" ),
+                    Find records that form a household and provide results in a tabular format.""" ),
             backstory = dedent("""\
-                               As a Household Matching Specialist in the field of entity resolution, 
-                               you must provide the Household Matches in a datset using multiple attributes
-                               Identify records where the full names are the same or have minor spelling variations.
-                               Consider abbreviations, nicknames, and common misspellings.
-                               Account for case sensitivity and punctuation differences."""),
+                               As a Household Identification Specialist, you must detect groups of records 
+                               that represent individuals residing at the same address, indicating 
+                               a household, despite variations in name and address formatting."""),
             
             allow_delegation=False,
             llm = LLM,
@@ -54,14 +48,14 @@ class ER_AGENTS:
         )
     def household_moves():
           return Agent(
-            role = "Household Moves Specialist",
+            role = "Relocation Tracking Specialist",
             goal = dedent("""\
-                        Conduct research on the dataset and provide the Household Moves result in a tabular format.""" ),
+                    Find instances where a household has moved to a new address and provide results in a tabular format.""" ),
             backstory = dedent("""\
-                               As a Household Moves Specialist in the field of entity resolution, 
-                               you must provide the Household Moves in a datset using multiple attributes
-                               Consider abbreviations, nicknames, and common misspellings.
-                               Account for case sensitivity and punctuation differences."""),
+                               As a Relocation Tracking Specialist,you must identify instances 
+                               where a household has moved to a new address by detecting groups 
+                               of records where the same individuals (by name) are associated 
+                               with more than one address, accounting for minor name variations and address changes."""),
             
             allow_delegation=False,
             llm = LLM,
