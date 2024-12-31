@@ -4,8 +4,6 @@ from textwrap import dedent
 class ER_TASKS:
     def direct_matcher_task(agent):
         return Task(description=dedent(f"""\
-                    Link records that directly match by name.
-
                     Identify records where the full names are the same or have minor spelling variations.
                     Consider abbreviations, nicknames, and common misspellings.
                     Account for case sensitivity and punctuation differences.  
@@ -18,8 +16,6 @@ class ER_TASKS:
         )
     def indirect_matcher_task(agent):
         return Task(description=dedent(f"""\
-                    Perform indirect matching of records connected through an intermediary.
-
                     Identify records where one record matches two others via different attributes (e.g., name and address).
                     Record A matches Record B by name.
                     Record A matches Record C by address.
@@ -51,8 +47,6 @@ class ER_TASKS:
         )
     def household_moves_task(agent):
         return Task(description=dedent(f"""\
-                    Find instances where a household has moved to a new address.
-                    
                     Identify groups of records where the same individuals (by name) are associated with more than one address.
                     Ensure that the names match despite minor variations.
                     Account for address changes indicating a move.
