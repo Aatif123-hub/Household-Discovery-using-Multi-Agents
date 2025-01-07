@@ -38,14 +38,9 @@ def rag_pipeline(selected_files, embedding_model, vector_store, llm_model):
 
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
-    multi_query_retriever = MultiQueryRetriever.from_llm(
-        llm=llm,
-        retriever=vectorstore.as_retriever(),
-    )
-
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
-        retriever=multi_query_retriever,
+        retriever=vectorstore.as_retriever(),
         memory=memory,
         verbose=True,
         combine_docs_chain_kwargs={"prompt": prompt},
