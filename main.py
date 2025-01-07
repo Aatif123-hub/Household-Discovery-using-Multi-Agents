@@ -50,7 +50,7 @@ def rag_pipeline(selected_files, embedding_model, vector_store, llm_model):
     return response['answer']
 
 if __name__ == "__main__":
-    st.title("Entity Resolution with LLM")
+    st.title("Record Linkage Using Multi-LLM")
 
     input_folder = "/Users/aatif/household_discovery/input"
     output_folder = "/Users/aatif/household_discovery/output"
@@ -79,7 +79,7 @@ if __name__ == "__main__":
         available_llms = LLM.get_available_llm()
         llm_model = st.selectbox("Select an LLM model:", available_llms)
 
-        if st.button("Run Pipeline"):
+        if st.button("Execute"):
             try:
                 combined_response = rag_pipeline(selected_files_paths, embedding_model, vector_store, llm_model)
                 
