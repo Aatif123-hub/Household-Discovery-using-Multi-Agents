@@ -16,7 +16,7 @@ class ER_AGENTS:
                                As a Direct Record Linker, you must identify and link records with identical 
                                or nearly identical full names, accounting for minor spelling variations, 
                                abbreviations, nicknames, case sensitivity, and punctuation differences."""),
-            allow_delegation=False,
+            allow_delegation=True,
             llm=LLM.get_llm(self.select_model),
             verbose=True
         )
