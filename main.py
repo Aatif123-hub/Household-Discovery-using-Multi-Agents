@@ -15,18 +15,23 @@ from rag.llm import LLM
 import os
 from rag.vectorstore import VectorStore
 
-def rag_pipeline(selected_files, embedding_model, vector_store, llm_model):
+def rag_pipeline(selected_files, embedding_model, vector_store, llm_model, use_existing_vector):
     vectorstore_path = "/Users/aatif/household_discovery/stored_vectors/store_index"
 
     # Initialize embeddings
     embeddings = Embeddings.get_embeddings(embedding_model)
+    vectorstore = None
 
-    try:
-        # Attempt to load the existing vectorstore
-        vectorstore = VectorStore.load_local(vectorstore_path, vector_store, embeddings)
-        st.info(f"Loaded existing {vector_store} vectorstore from disk.")
-    except Exception as e:
-        st.warning(f"Could not load vectorstore: {e}. Rebuilding vectorstore...")
+    if use_existing_vector:
+        try:
+            # Attempt to load the existing vectorstore
+            vectorstore = VectorStore.load_local(vectorstore_path, vector_store, embeddings)
+            st.info(f"Loaded existing {vector_store} vectorstore from disk.")
+        except Exception as e:
+            st.warning(f"Could not load vectorstore: {e}. Proceeding to create a new one...")
+            use_existing_vector = False
+
+    if not use_existing_vector:
         combined_text = ""
         for selected_file in selected_files:
             if selected_file.endswith('.csv'):
@@ -41,27 +46,20 @@ def rag_pipeline(selected_files, embedding_model, vector_store, llm_model):
 
         text_chunks = Chunking.get_chunks(combined_text)
         vectorstore = VectorStore.vectorization(vector_store, text_chunks, embeddings)
-        VectorStore.save_local(vectorstore, vectorstore_path, vector_store)
-        st.info(f"Created and saved new {vector_store} vectorstore.")
+        st.info(f"Created new {vector_store} vectorstore.")
 
-    # Continue with LLM and retrieval chain setup...
-
-
-
-    # Load the LLM and prompt template
+    # Continue with LLM and retrieval chain setup
     llm = LLM.get_llm(llm_model)
     with open('/Users/aatif/household_discovery/prompt/ER_prompt.txt', 'r') as file:
         prompt_template = file.read()
     prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
 
-    # Set up memory and retriever
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
     multi_query_retriever = MultiQueryRetriever.from_llm(
         llm=llm,
         retriever=vectorstore.as_retriever(),
     )
 
-    # Create the conversation chain
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=multi_query_retriever,
@@ -70,10 +68,8 @@ def rag_pipeline(selected_files, embedding_model, vector_store, llm_model):
         combine_docs_chain_kwargs={"prompt": prompt},
     )
 
-    # Generate response
     response = conversation_chain({"question": "Provide a summary based on the prompt template."})
-    return response['answer']
-
+    return response['answer'], vectorstore
 
 if __name__ == "__main__":
     st.title("Record Linkage Using Multi-LLM")
@@ -81,7 +77,7 @@ if __name__ == "__main__":
     input_folder = "/Users/aatif/household_discovery/input"
     output_folder = "/Users/aatif/household_discovery/output"
     os.makedirs(output_folder, exist_ok=True)
-    available_files = [f for f in os.listdir(input_folder) if f.endswith(( '.csv', '.xlsx'))]
+    available_files = [f for f in os.listdir(input_folder) if f.endswith(('.csv', '.xlsx'))]
 
     uploaded_files = st.file_uploader("Upload a CSV or XLSX file:", type=["csv", "xlsx"], accept_multiple_files=True)
 
@@ -105,16 +101,49 @@ if __name__ == "__main__":
         available_llms = LLM.get_available_llm()
         llm_model = st.selectbox("Select an LLM model:", available_llms)
 
+        # Step 1: Ask user if they want to use the existing vector database
+        use_existing_vector = st.radio(
+            "Do you want to use the stored vector database?",
+            ("Yes, use stored vector database", "No, create a new vector database")
+        ) == "Yes, use stored vector database"
+
+        # Step 2: Process based on the user's choice
         if st.button("Execute"):
             try:
-                combined_response = rag_pipeline(selected_files_paths, embedding_model, vector_store, llm_model)
+                # Run the pipeline
+                combined_response, new_vectorstore = rag_pipeline(
+                    selected_files_paths,
+                    embedding_model,
+                    vector_store,
+                    llm_model,
+                    use_existing_vector
+                )
                 
+                # Display the summary
                 output_file_path = os.path.join(output_folder, "output_summary.md")
                 with open(output_file_path, "w") as output_file:
                     output_file.write(f"# Summary\n\n{combined_response}\n")
-                    output_file.write("\n#\n")
-
                 st.success(f"Summary saved to {output_file_path}")
                 st.write("## Summary\n", combined_response)
+
+                # Step 3: If a new vectorstore was created, prompt the user to save it
+                if not use_existing_vector and new_vectorstore:
+                    save_vector = st.radio(
+                        "Do you want to save the newly created vector database for future use?",
+                        ("Yes, save the new vector database", "No, don't save it"),
+                        index=1  # Default to "No"
+                    )
+                    
+                    # Save only if user explicitly selects "Yes"
+                    if save_vector == "Yes, save the new vector database":
+                        vectorstore_path = "/Users/aatif/household_discovery/stored_vectors/store_index"
+                        try:
+                            VectorStore.save_local(new_vectorstore, vectorstore_path, vector_store)
+                            st.success(f"New {vector_store} vector database saved locally at {vectorstore_path}.")
+                        except Exception as e:
+                            st.error(f"Failed to save the new vector database: {e}")
+                    else:
+                        st.info("The new vector database was not saved.")
+
             except Exception as e:
                 st.error(f"Error: {e}")
