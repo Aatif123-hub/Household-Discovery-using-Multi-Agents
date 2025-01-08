@@ -15,7 +15,10 @@ class LLM:
           try:
             llm = ChatOpenAI(model = "gpt-4o",
                               max_tokens=4096,
-                              temperature=0.2)
+                              top_p=0.9,
+                              frequency_penalty=0.8,
+                              presence_penalty=0.8,
+                              temperature=0.3)
           except Exception as e:
             raise Exception(f"Cannot load chatgpt. Error:{e}")
         
@@ -23,7 +26,11 @@ class LLM:
            try:
               llm = ChatMistralAI(model = "mistral-large-latest",
                                   max_tokens=4096,
-                                  temperature=0.2)
+                                  top_p=0.9,
+                                  top_k=80,
+                                  frequency_penalty=0.8,
+                                  presence_penalty=0.8,
+                                  temperature=0.3)
            except Exception as e:
               raise Exception(f"Cannot load mistral. Error:{e}")
            
@@ -32,7 +39,7 @@ class LLM:
               llm = ChatOpenAI(model="llama3.2",
                                base_url=os.getenv("BASE_URL"),
                                max_tokens=4096,
-                               temperature=0.2)
+                               temperature=0)
            except Exception as e:
               raise Exception(f"Cannot load llama3.2. Error:{e}")
            
@@ -41,7 +48,7 @@ class LLM:
               llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash",
                           api_key = os.getenv("GOOGLE_API_KEY"),
                           max_tokens=4096,
-                          temperature=0.2)
+                          temperature=0)
            except Exception as e:
               raise Exception(f"Cannot load gemini. Error:{e}")
               
