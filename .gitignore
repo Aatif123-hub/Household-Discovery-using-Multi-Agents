@@ -2,3 +2,4 @@
 /output/
 rag/__pycache__
 utils/__pycache__
+/stored_vectors
