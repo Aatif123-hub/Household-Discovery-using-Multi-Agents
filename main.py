@@ -9,45 +9,71 @@ from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.retrievers.multi_query import MultiQueryRetriever
+from langchain.retrievers.self_query.base import SelfQueryRetriever
 from rag.llm import LLM
 
+import os
+from rag.vectorstore import VectorStore
+
 def rag_pipeline(selected_files, embedding_model, vector_store, llm_model):
+    vectorstore_path = "/Users/aatif/household_discovery/stored_vectors/store_index"
 
-    combined_text = ""
-    for selected_file in selected_files:
-        if selected_file.endswith('.csv'):
-            combined_text += Parsers.csv_parser([selected_file]).to_string()
-
-        elif selected_file.endswith('.xlsx'):
-            combined_text += Parsers.xlsx_parser([selected_file]).to_string() 
-
-        else:
-            raise ValueError("Unsupported file type. Please select a CSV or XLSX file.")
-
-    if not combined_text.strip():
-        raise ValueError("No text extracted from the selected files.")
-
-    text_chunks = Chunking.get_chunks(combined_text)
+    # Initialize embeddings
     embeddings = Embeddings.get_embeddings(embedding_model)
-    vectorstore = VectorStore.vectorization(vector_store, text_chunks, embeddings)
 
+    try:
+        # Attempt to load the existing vectorstore
+        vectorstore = VectorStore.load_local(vectorstore_path, vector_store, embeddings)
+        st.info(f"Loaded existing {vector_store} vectorstore from disk.")
+    except Exception as e:
+        st.warning(f"Could not load vectorstore: {e}. Rebuilding vectorstore...")
+        combined_text = ""
+        for selected_file in selected_files:
+            if selected_file.endswith('.csv'):
+                combined_text += Parsers.csv_parser([selected_file]).to_string()
+            elif selected_file.endswith('.xlsx'):
+                combined_text += Parsers.xlsx_parser([selected_file]).to_string()
+            else:
+                raise ValueError("Unsupported file type. Please select a CSV or XLSX file.")
+
+        if not combined_text.strip():
+            raise ValueError("No text extracted from the selected files.")
+
+        text_chunks = Chunking.get_chunks(combined_text)
+        vectorstore = VectorStore.vectorization(vector_store, text_chunks, embeddings)
+        VectorStore.save_local(vectorstore, vectorstore_path, vector_store)
+        st.info(f"Created and saved new {vector_store} vectorstore.")
+
+    # Continue with LLM and retrieval chain setup...
+
+
+
+    # Load the LLM and prompt template
     llm = LLM.get_llm(llm_model)
     with open('/Users/aatif/household_discovery/prompt/ER_prompt.txt', 'r') as file:
         prompt_template = file.read()
     prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
 
+    # Set up memory and retriever
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-
-    conversation_chain = ConversationalRetrievalChain.from_llm(
+    multi_query_retriever = MultiQueryRetriever.from_llm(
         llm=llm,
         retriever=vectorstore.as_retriever(),
+    )
+
+    # Create the conversation chain
+    conversation_chain = ConversationalRetrievalChain.from_llm(
+        llm=llm,
+        retriever=multi_query_retriever,
         memory=memory,
         verbose=True,
         combine_docs_chain_kwargs={"prompt": prompt},
     )
 
+    # Generate response
     response = conversation_chain({"question": "Provide a summary based on the prompt template."})
     return response['answer']
+
 
 if __name__ == "__main__":
     st.title("Record Linkage Using Multi-LLM")
