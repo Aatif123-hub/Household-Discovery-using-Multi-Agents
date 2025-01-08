@@ -7,16 +7,7 @@ Duplicate Records
 Missing Information
 Inconsistencies
 Spelling Errors
-Example Records:
 
-
-Record ID    Full Name             Address                         City        State ZIP        SSN          Other Info
-A910769      J KEGLER              2554 SOUTHWEST 118TH LN BLDG 21  Miramar     FL    33025     021-37-0119  
-A924058      FRANCINE J KEGLER     14668 Wildwood Dr               Largo       FL    33774     21370119     
-A928147      FRANCINE J KEGLER     214 ELDORADO DR                 Debary      FL    32713                  
-A928824      FRANCINE J KEGLEWR    254 SW 118TH LN BLDG 21         Miramar     FL    33025     21370119     1915
-A972885      Francine J Kegler     214 ELDORADO DR                 Debary      FL    32713     21371019     
-A994537      FRANCINE J KEGLER     4075 WOODRIDGE PL               Panama City FL    32405     1237011      PO Box 16743 Panama City FL 32406
 Tasks:
 Task 1: Direct Matching
 Objective: Link records that directly match by name.
