@@ -53,11 +53,21 @@ class VectorStore:
         Save the vectorstore locally.
         """
         if store_type.lower() == 'faiss':
-            vectorstore.save_local(path)
+            try:
+                print(f"Saving FAISS vectorstore to {path}...")
+                vectorstore.save_local(path)
+                print(f"FAISS vectorstore saved successfully at {path}.")
+            except Exception as e:
+                raise Exception(f"Failed to save FAISS vectorstore. Error: {e}")
         elif store_type.lower() == 'qdrant':
             raise NotImplementedError("Saving Qdrant locally is not supported. Use the Qdrant server.")
         elif store_type.lower() == 'chroma':
-            vectorstore.persist(path)
+            try:
+                print("Persisting Chroma vectorstore...")
+                vectorstore.persist()  # No path argument needed
+                print("Chroma vectorstore persisted successfully.")
+            except Exception as e:
+                raise Exception(f"Failed to save Chroma vectorstore. Error: {e}")
         else:
             raise ValueError("Unsupported vectorstore type for saving.")
 
@@ -81,6 +91,6 @@ class VectorStore:
             except Exception as e:
                 raise Exception(f"Cannot load Chroma vectorstore. Error: {e}")
         else:
-            raise ValueError("Unsupported vectorstore type for loading.")
+            raise ValueError("Unsupported vectorstore")
         
         return vectorstore

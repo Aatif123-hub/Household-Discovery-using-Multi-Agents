@@ -20,18 +20,19 @@ def rag_pipeline(selected_files, embedding_model, vector_store, llm_model, use_e
 
     # Initialize embeddings
     embeddings = Embeddings.get_embeddings(embedding_model)
-    vectorstore = None
 
-    if use_existing_vector:
-        try:
-            # Attempt to load the existing vectorstore
+    try:
+        # Attempt to load the existing vectorstore
+        if use_existing_vector:
             vectorstore = VectorStore.load_local(vectorstore_path, vector_store, embeddings)
             st.info(f"Loaded existing {vector_store} vectorstore from disk.")
-        except Exception as e:
-            st.warning(f"Could not load vectorstore: {e}. Proceeding to create a new one...")
-            use_existing_vector = False
+        else:
+            vectorstore = None
+    except Exception as e:
+        st.warning(f"Could not load vectorstore: {e}. Proceeding to create a new one...")
+        vectorstore = None
 
-    if not use_existing_vector:
+    if not vectorstore:
         combined_text = ""
         for selected_file in selected_files:
             if selected_file.endswith('.csv'):
@@ -46,7 +47,12 @@ def rag_pipeline(selected_files, embedding_model, vector_store, llm_model, use_e
 
         text_chunks = Chunking.get_chunks(combined_text)
         vectorstore = VectorStore.vectorization(vector_store, text_chunks, embeddings)
-        st.info(f"Created new {vector_store} vectorstore.")
+
+        # Debug: Check if vectorstore was created successfully
+        if vectorstore:
+            print("New vectorstore created successfully.")
+        else:
+            raise ValueError("Failed to create the vectorstore.")
 
     # Continue with LLM and retrieval chain setup
     llm = LLM.get_llm(llm_model)
@@ -69,7 +75,10 @@ def rag_pipeline(selected_files, embedding_model, vector_store, llm_model, use_e
     )
 
     response = conversation_chain({"question": "Provide a summary based on the prompt template."})
+
+    # Return response and vectorstore
     return response['answer'], vectorstore
+
 
 if __name__ == "__main__":
     st.title("Record Linkage Using Multi-LLM")
@@ -107,10 +116,9 @@ if __name__ == "__main__":
             ("Yes, use stored vector database", "No, create a new vector database")
         ) == "Yes, use stored vector database"
 
-        # Step 2: Process based on the user's choice
+        # Step 2: Execute the pipeline
         if st.button("Execute"):
             try:
-                # Run the pipeline
                 combined_response, new_vectorstore = rag_pipeline(
                     selected_files_paths,
                     embedding_model,
@@ -118,7 +126,13 @@ if __name__ == "__main__":
                     llm_model,
                     use_existing_vector
                 )
-                
+
+                # Store the new vectorstore in session state if created
+                if not use_existing_vector:
+                    st.session_state["new_vectorstore"] = new_vectorstore
+                    st.session_state["vectorstore_path"] = "/Users/aatif/household_discovery/stored_vectors/store_index"
+                    st.session_state["vectorstore_type"] = vector_store
+
                 # Display the summary
                 output_file_path = os.path.join(output_folder, "output_summary.md")
                 with open(output_file_path, "w") as output_file:
@@ -126,24 +140,29 @@ if __name__ == "__main__":
                 st.success(f"Summary saved to {output_file_path}")
                 st.write("## Summary\n", combined_response)
 
-                # Step 3: If a new vectorstore was created, prompt the user to save it
-                if not use_existing_vector and new_vectorstore:
-                    save_vector = st.radio(
-                        "Do you want to save the newly created vector database for future use?",
-                        ("Yes, save the new vector database", "No, don't save it"),
-                        index=1  # Default to "No"
-                    )
-                    
-                    # Save only if user explicitly selects "Yes"
-                    if save_vector == "Yes, save the new vector database":
-                        vectorstore_path = "/Users/aatif/household_discovery/stored_vectors/store_index"
-                        try:
-                            VectorStore.save_local(new_vectorstore, vectorstore_path, vector_store)
-                            st.success(f"New {vector_store} vector database saved locally at {vectorstore_path}.")
-                        except Exception as e:
-                            st.error(f"Failed to save the new vector database: {e}")
-                    else:
-                        st.info("The new vector database was not saved.")
-
             except Exception as e:
                 st.error(f"Error: {e}")
+
+        # Step 3: Prompt to save the vectorstore if it exists in session state
+        if "new_vectorstore" in st.session_state:
+            save_vector = st.radio(
+                "Do you want to save the newly created vector database for future use?",
+                ("Yes, save the new vector database", "No, don't save it"),
+                index=1  # Default to "No"
+            )
+            
+            if st.button("Save Vectorstore"):
+                if save_vector == "Yes, save the new vector database":
+                    try:
+                        VectorStore.save_local(
+                            st.session_state["new_vectorstore"],
+                            st.session_state["vectorstore_path"],
+                            st.session_state["vectorstore_type"]
+                        )
+                        st.success(f"New {st.session_state['vectorstore_type']} vector database saved locally at {st.session_state['vectorstore_path']}.")
+                        # Clear the saved vectorstore from session state after saving
+                        del st.session_state["new_vectorstore"]
+                    except Exception as e:
+                        st.error(f"Failed to save the new vector database: {e}")
+                else:
+                    st.info("The new vector database was not saved.")
