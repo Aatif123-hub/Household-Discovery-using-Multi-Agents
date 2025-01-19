@@ -16,7 +16,7 @@ import os
 from rag.vectorstore import VectorStore
 
 def rag_pipeline(selected_files, embedding_model, vector_store, llm_model, use_existing_vector):
-    vectorstore_path = "/Users/aatif/household_discovery/stored_vectors/store_index"
+    vectorstore_path = "/Users/aatif/Household-Discovery-using-Multi-Agents/stored_vectors/store_index"
 
     # Initialize embeddings
     embeddings = Embeddings.get_embeddings(embedding_model)
@@ -56,7 +56,7 @@ def rag_pipeline(selected_files, embedding_model, vector_store, llm_model, use_e
 
     # Continue with LLM and retrieval chain setup
     llm = LLM.get_llm(llm_model)
-    with open('/Users/aatif/household_discovery/prompt/ER_prompt.txt', 'r') as file:
+    with open('/Users/aatif/Household-Discovery-using-Multi-Agents/prompt/ER_prompt.txt', 'r') as file:
         prompt_template = file.read()
     prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
 
@@ -83,8 +83,8 @@ def rag_pipeline(selected_files, embedding_model, vector_store, llm_model, use_e
 if __name__ == "__main__":
     st.title("Record Linkage Using Multi-LLM")
 
-    input_folder = "/Users/aatif/household_discovery/input"
-    output_folder = "/Users/aatif/household_discovery/output"
+    input_folder = "/Users/aatif/Household-Discovery-using-Multi-Agents/input"
+    output_folder = "/Users/aatif/Household-Discovery-using-Multi-Agents/output"
     os.makedirs(output_folder, exist_ok=True)
     available_files = [f for f in os.listdir(input_folder) if f.endswith(('.csv', '.xlsx'))]
 
@@ -130,7 +130,7 @@ if __name__ == "__main__":
                 # Store the new vectorstore in session state if created
                 if not use_existing_vector:
                     st.session_state["new_vectorstore"] = new_vectorstore
-                    st.session_state["vectorstore_path"] = "/Users/aatif/household_discovery/stored_vectors/store_index"
+                    st.session_state["vectorstore_path"] = "/Users/aatif/Household-Discovery-using-Multi-Agents/stored_vectors/store_index"
                     st.session_state["vectorstore_type"] = vector_store
 
                 # Display the summary
