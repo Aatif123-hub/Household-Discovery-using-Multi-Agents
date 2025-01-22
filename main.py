@@ -53,8 +53,8 @@ def rag_pipeline(selected_files, embedding_model, vector_store, llm_model):
 if __name__ == "__main__":
     st.title("Entity Resolution with LLM")
 
-    input_folder = "/Users/aatif/household_discovery/input"
-    output_folder = "/Users/aatif/household_discovery/output"
+    input_folder = "/Users/aatif/Household-Discovery-using-Multi-Agents/input"
+    output_folder = "/Users/aatif/Household-Discovery-using-Multi-Agents/output"
     os.makedirs(output_folder, exist_ok=True)
     available_files = [f for f in os.listdir(input_folder) if f.endswith(( '.csv', '.xlsx'))]
 
