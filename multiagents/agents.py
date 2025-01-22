@@ -18,7 +18,8 @@ class ER_AGENTS:
                                abbreviations, nicknames, case sensitivity, and punctuation differences."""),
             allow_delegation=True,
             llm=LLM.get_llm(self.select_model),
-            verbose=True
+            verbose=True,
+            memory = True
         )
 
     def indirect_match(self):
@@ -32,7 +33,8 @@ class ER_AGENTS:
                                name and another by address, thereby linking all associated records."""),
             allow_delegation=False,
             llm=LLM.get_llm(self.select_model),
-            verbose=True
+            verbose=True,
+            memory = True
         )
 
     def household_match(self):
@@ -46,7 +48,8 @@ class ER_AGENTS:
                                a household, despite variations in name and address formatting."""),
             allow_delegation=False,
             llm=LLM.get_llm(self.select_model),
-            verbose=True
+            verbose=True,
+            memory = True
         )
 
     def household_moves(self):
@@ -61,5 +64,6 @@ class ER_AGENTS:
                                with more than one address, accounting for minor name variations and address changes."""),
             allow_delegation=False,
             llm=LLM.get_llm(self.select_model),
-            verbose=True
+            verbose=True,
+            memory = True
         )
