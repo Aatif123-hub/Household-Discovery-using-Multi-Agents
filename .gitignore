@@ -2,6 +2,5 @@
 /output/
 rag/__pycache__
 utils/__pycache__
-agents/__pycache__
-/stored_vectors/
 multiagents/__pycache__
+/stored_vectors/
