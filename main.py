@@ -1,35 +1,26 @@
-
 import os
 import streamlit as st
 from utils.parser import Parsers
-from utils.chunking import Chunking
 from rag.embeddings import Embeddings
 from rag.vectorstore import VectorStore
 from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.retrievers.multi_query import MultiQueryRetriever
-from langchain.retrievers.self_query.base import SelfQueryRetriever
 from rag.llm import LLM
-
-import os
-from rag.vectorstore import VectorStore
 
 def rag_pipeline(selected_files, embedding_model, vector_store, llm_model, use_existing_vector):
     vectorstore_path = "/Users/aatif/Household-Discovery-using-Multi-Agents/stored_vectors/store_index"
-
-    # Initialize embeddings
     embeddings = Embeddings.get_embeddings(embedding_model)
 
     try:
-        # Attempt to load the existing vectorstore
         if use_existing_vector:
             vectorstore = VectorStore.load_local(vectorstore_path, vector_store, embeddings)
             st.info(f"Loaded existing {vector_store} vectorstore from disk.")
         else:
             vectorstore = None
     except Exception as e:
-        st.warning(f"Could not load vectorstore: {e}. Proceeding to create a new one...")
+        st.warning(f"Could not load vectorstore: {e}. Creating a new one...")
         vectorstore = None
 
     if not vectorstore:
@@ -44,11 +35,12 @@ def rag_pipeline(selected_files, embedding_model, vector_store, llm_model, use_e
 
         if not combined_text.strip():
             raise ValueError("No text extracted from the selected files.")
-
-        text_chunks = Chunking.get_chunks(combined_text)
+        if not combined_text.strip():
+            raise ValueError("No text extracted from the selected files.")
+        
+        text_chunks = combined_text.split("\n")
         vectorstore = VectorStore.vectorization(vector_store, text_chunks, embeddings)
 
-        # Debug: Check if vectorstore was created successfully
         if vectorstore:
             print("New vectorstore created successfully.")
         else:
