@@ -11,3 +11,4 @@ langchain-mistralai
 python-dotenv
 qdrant-client
 crewai
+langgraph
