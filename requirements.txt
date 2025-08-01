@@ -12,3 +12,4 @@ python-dotenv
 qdrant-client
 crewai
 langgraph
+langchain-deepseek
